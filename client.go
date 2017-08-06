@@ -39,7 +39,7 @@ func NewClient() (c *Client) {
 		clt:     client.NewClient(fmt.Sprintf("clt%s", utils.NewId()), mgr),
 		cbMap:   make(map[string]Callback),
 		qos:     0,
-		timeout: 30 * time.Second,
+		timeout: 30,
 	}
 	c.rchanPool = sync.Pool{
 		New: func() interface{} {

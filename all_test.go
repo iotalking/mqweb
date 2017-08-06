@@ -2,7 +2,6 @@ package mqweb
 
 import (
 	"fmt"
-	"net/http"
 	"testing"
 	"time"
 
@@ -10,11 +9,12 @@ import (
 )
 
 func TestServer(t *testing.T) {
-	gateway := "iotalking.top:1883"
+	gateway := "localhost:1883"
 	s := NewServer(utils.NewId())
 	err := s.DialGeteWay(gateway)
 	if err != nil {
 		fmt.Println(err.Error())
+		t.FailNow()
 		return
 	}
 
@@ -27,6 +27,7 @@ func TestServer(t *testing.T) {
 		err = c.DialGateWay(gateway)
 		if err != nil {
 			fmt.Println(err.Error())
+			t.FailNow()
 			return
 		}
 		defer c.Close()
@@ -37,6 +38,7 @@ func TestServer(t *testing.T) {
 		if err != nil {
 
 			fmt.Println(err.Error())
+			t.FailNow()
 			return
 		}
 		if string(result) != "helloworld" {
@@ -80,11 +82,4 @@ func BenchmarkServer(b *testing.B) {
 		s.Close()
 	}()
 	s.Listen()
-}
-func TestHttpGet(t *testing.T) {
-	_, err := http.Get("http://localhost:8081/dashboard/api/activeSessions")
-	if err != nil {
-		t.Log(err)
-		t.FailNow()
-	}
 }

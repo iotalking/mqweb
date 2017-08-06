@@ -31,7 +31,7 @@ func NewServer(id string) *Server {
 		hMap:      make(map[string]Handler),
 		closeChan: make(chan byte),
 		qos:       0,
-		timeout:   30 * time.Second,
+		timeout:   30,
 	}
 }
 
