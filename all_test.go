@@ -2,12 +2,37 @@ package mqweb
 
 import (
 	"fmt"
+	"net/http"
 	"testing"
 	"time"
 
 	"github.com/iotalking/mqtt-broker/utils"
 )
 
+func TestHttp(t *testing.T) {
+	http.HandleFunc("/api/v1/helloworld", func(w http.ResponseWriter, r *http.Request) {
+		t.Log("helloworld")
+	})
+	go func() {
+		http.ListenAndServe(":9090", nil)
+	}()
+	time.Sleep(500)
+	_, err := http.Get("http://localhost:9090/api/v1/helloworld")
+	if err != nil {
+		t.FailNow()
+	}
+}
+
+func BenchmarkHttp(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		_, err := http.Get("http://localhost:9090/api/v1/helloworld")
+		if err != nil {
+			b.FailNow()
+		}
+
+	}
+
+}
 func TestServer(t *testing.T) {
 	gateway := "localhost:1883"
 	s := NewServer(utils.NewId())
