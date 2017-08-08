@@ -25,7 +25,7 @@ func NewServer(id string) *Server {
 	mgrOnce.Do(func() {
 		mgr = session.GetMgr()
 	})
-	id = fmt.Sprintf("svr:%s", id)
+	id = fmt.Sprintf("svr%s", id)
 	return &Server{
 		clt:       client.NewClient(id, mgr),
 		hMap:      make(map[string]Handler),
@@ -91,7 +91,7 @@ func (this *Server) onmessage(id string, data []byte, qos byte) {
 }
 func (this *Server) Serv(url string, handler Handler) (err error) {
 	token, err := this.clt.Subcribe(map[string]byte{
-		url: 1,
+		url: this.qos,
 	})
 	if err != nil {
 		return

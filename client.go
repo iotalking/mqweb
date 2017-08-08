@@ -64,19 +64,20 @@ func (this *Client) SetQos(qos byte) {
 
 //连接服务器
 func (this *Client) DialGateWay(addr string) (err error) {
-	_, err = this.clt.Connect("mqtt", addr)
-	if err != nil {
-		return
-	}
 	var token session.Token
-	token, err = this.clt.Subcribe(map[string]byte{
-		fmt.Sprintf("$client/%s/cb/+", this.clt.GetID()): this.qos,
-	})
+	token, err = this.clt.Connect("mqtt", addr)
 	if err != nil {
 		return
 	}
 	if !token.WaitTimeout(this.timeout * time.Second) {
 		err = fmt.Errorf("client DialGateWay timeout")
+	}
+
+	token, err = this.clt.Subcribe(map[string]byte{
+		fmt.Sprintf("mqwebclt/%s/cb/+", this.clt.GetID()): this.qos,
+	})
+	if err != nil {
+		return
 	}
 	this.clt.SetOnMessage(this.onmessage)
 	return
@@ -111,9 +112,9 @@ func (this *Client) delCalback(id string) (err error) {
 	return
 }
 
-//回调topic:$client/<clientId>/<callid>
+//回调topic:mqwebclt/<clientId>/<callid>
 func (this *Client) Call(url string, params []byte) (result []byte, err error) {
-	id := fmt.Sprintf("$client/%s/cb/%d", this.clt.GetID(), this.NewCbId())
+	id := fmt.Sprintf("mqwebclt/%s/cb/%d", this.clt.GetID(), this.NewCbId())
 
 	td := this.rchanPool.Get().(*tmData)
 	td.timer.Reset(this.timeout * time.Second)
